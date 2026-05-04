@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bisikku — Not Gonna Lie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Dancing+Script:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5EDD8;
+    --parchment: #EDE0C4;
+    --aged: #D4B896;
+    --ink: #2C1810;
+    --ink-light: #5C3D2E;
+    --rose: #C4736A;
+    --rose-light: #DBA89E;
+    --dusty-blue: #7B9BAE;
+    --dusty-green: #8BA888;
+    --gold: #C9A84C;
+    --gold-light: #E8CF8A;
+    --sepia: #8B6914;
+    --border-thin: rgba(44,24,16,0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ─── PAPER TEXTURE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ─── DECORATIVE ELEMENTS ─── */
+  .deco-corner {
+    position: fixed;
+    width: 140px; height: 140px;
+    pointer-events: none; z-index: 1;
+    opacity: 0.22;
+  }
+  .deco-corner.tl { top: 0; left: 0; }
+  .deco-corner.tr { top: 0; right: 0; transform: scaleX(-1); }
+  .deco-corner.bl { bottom: 0; left: 0; transform: scaleY(-1); }
+  .deco-corner.br { bottom: 0; right: 0; transform: scale(-1); }
+
+  /* ─── FLOATING BOTANICALS ─── */
+  .botanical {
+    position: fixed;
+    pointer-events: none; z-index: 1;
+    opacity: 0;
+    animation: floatIn 1.2s ease forwards, floatGently 6s ease-in-out infinite;
+  }
+  @keyframes floatIn { to { opacity: 1; } }
+  @keyframes floatGently {
+    0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+    50% { transform: translateY(-8px) rotate(calc(var(--r, 0deg) + 3deg)); }
+  }
+
+  /* ─── BUTTERFLY ─── */
+  .butterfly {
+    position: fixed;
+    pointer-events: none; z-index: 2;
+    animation: flyAround 18s linear infinite;
+    transform-origin: center;
+  }
+  .butterfly svg { animation: flapWings 0.5s ease-in-out infinite alternate; }
+  @keyframes flapWings {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0.6); }
+  }
+  @keyframes flyAround {
+    0%   { left: 5%; top: 20%; }
+    25%  { left: 80%; top: 15%; }
+    50%  { left: 88%; top: 60%; }
+    75%  { left: 10%; top: 70%; }
+    100% { left: 5%; top: 20%; }
+  }
+
+  /* ─── PAGES ─── */
+  #page-sender, #page-receiver { display: none; }
+  #page-home { display: block; }
+  .page {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; z-index: 10;
+    padding: 2rem 1rem;
+  }
+
+  /* ─── LOGO ─── */
+  .logo {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    color: var(--ink);
+    text-align: center;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .logo span { color: var(--rose); }
+
+  .tagline {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(0.85rem, 2vw, 1.05rem);
+    color: var(--ink-light);
+    text-align: center;
+    letter-spacing: 0.08em;
+    margin-bottom: 2.5rem;
+    opacity: 0.8;
+  }
+
+  /* ─── PAPER CARD ─── */
+  .paper-card {
+    background: var(--parchment);
+    border: 1.5px solid var(--border-thin);
+    border-radius: 2px;
+    padding: 2.2rem 2.4rem;
+    width: 100%; max-width: 480px;
+    position: relative;
+    box-shadow:
+      2px 4px 18px rgba(44,24,16,0.12),
+      0 0 0 6px rgba(212,184,150,0.22),
+      0 0 0 7px rgba(44,24,16,0.06);
+  }
+  .paper-card::before {
+    content: '';
+    position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border: 1px solid rgba(44,24,16,0.08);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  /* ─── TORN EDGE ─── */
+  .paper-card .torn-top {
+    position: absolute; top: -10px; left: 0; right: 0;
+    height: 12px;
+    background: var(--parchment);
+    clip-path: polygon(0% 100%, 2% 30%, 4% 80%, 7% 10%, 10% 70%, 13% 20%, 16% 85%, 20% 5%, 24% 75%, 28% 25%, 32% 90%, 36% 15%, 40% 70%, 44% 30%, 48% 85%, 52% 10%, 56% 65%, 60% 25%, 64% 80%, 68% 20%, 72% 75%, 76% 30%, 80% 90%, 84% 15%, 88% 70%, 92% 25%, 96% 85%, 100% 30%, 100% 100%);
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 1.4rem 0;
+    color: var(--aged);
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--aged), transparent);
+  }
+  .divider-icon { font-size: 1.1rem; opacity: 0.7; }
+
+  /* ─── LABEL ─── */
+  .field-label {
+    font-family: 'IM Fell English', serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  /* ─── INPUTS ─── */
+  .pen-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--aged);
+    padding: 0.5rem 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.3s;
+    caret-color: var(--rose);
+  }
+  .pen-input::placeholder { color: var(--aged); font-style: italic; }
+  .pen-input:focus { border-bottom-color: var(--rose); }
+
+  .pen-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--aged);
+    padding: 0.5rem 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+    outline: none;
+    resize: none;
+    min-height: 80px;
+    transition: border-color 0.3s;
+    caret-color: var(--rose);
+    line-height: 1.8;
+  }
+  .pen-textarea::placeholder { color: var(--aged); font-style: italic; }
+  .pen-textarea:focus { border-bottom-color: var(--rose); }
+
+  /* ─── BUTTON ─── */
+  .wax-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 0.5rem;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    padding: 0.8rem 1.8rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    margin-top: 1.2rem;
+  }
+  .wax-btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--rose);
+    transform: translateX(-101%);
+    transition: transform 0.35s ease;
+    z-index: 0;
+  }
+  .wax-btn:hover::after { transform: translateX(0); }
+  .wax-btn span { position: relative; z-index: 1; }
+  .wax-btn:active { transform: scale(0.98); }
+
+  .wax-btn.secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--border-thin);
+    margin-top: 0.6rem;
+  }
+  .wax-btn.secondary::after { background: var(--parchment); }
+  .wax-btn.secondary:hover { color: var(--ink); }
+
+  /* ─── CARD TITLE ─── */
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.3rem;
+    color: var(--ink);
+  }
+  .card-sub {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    text-align: center;
+    color: var(--ink-light);
+    margin-bottom: 0.5rem;
+    opacity: 0.75;
+  }
+
+  /* ─── LINK DISPLAY ─── */
+  .link-box {
+    background: rgba(44,24,16,0.04);
+    border: 1.5px dashed var(--aged);
+    border-radius: 2px;
+    padding: 0.75rem 1rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.88rem;
+    color: var(--sepia);
+    word-break: break-all;
+    display: flex; align-items: center; gap: 0.6rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+  }
+  .link-box:hover { background: rgba(44,24,16,0.08); }
+  .link-box .link-icon { flex-shrink: 0; opacity: 0.6; }
+
+  /* ─── COPY TOAST ─── */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.6rem 1.4rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.88rem;
+    border-radius: 2px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 100;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1; transform: translateX(-50%) translateY(0);
+  }
+
+  /* ─── RECEIVER PAGE ─── */
+  .envelope-wrap {
+    perspective: 800px;
+    margin-bottom: 1.5rem;
+  }
+  .envelope {
+    width: 200px; height: 140px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: envelopeReveal 1.5s ease forwards;
+    cursor: pointer;
+  }
+  @keyframes envelopeReveal {
+    0% { transform: rotateX(-20deg) scale(0.8); opacity: 0; }
+    60% { transform: rotateX(5deg) scale(1.02); }
+    100% { transform: rotateX(0deg) scale(1); opacity: 1; }
+  }
+  .envelope-body {
+    width: 200px; height: 140px;
+    background: var(--parchment);
+    border: 2px solid var(--aged);
+    border-radius: 2px;
+    position: relative;
+    overflow: visible;
+    box-shadow: 3px 6px 20px rgba(44,24,16,0.2);
+  }
+  .envelope-flap {
+    position: absolute; top: 0; left: 0;
+    width: 100%;
+    height: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-top: 70px solid var(--aged);
+    transform-origin: top;
+    transition: transform 0.8s ease;
+    z-index: 2;
+  }
+  .envelope.open .envelope-flap {
+    transform: rotateX(180deg);
+    border-top-color: var(--parchment);
+  }
+  .envelope-bottom {
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-bottom: 70px solid rgba(44,24,16,0.08);
+    z-index: 1;
+  }
+  .envelope-left {
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 100px solid rgba(44,24,16,0.05);
+    border-top: 70px solid transparent;
+    border-bottom: 70px solid transparent;
+  }
+  .envelope-right {
+    position: absolute; bottom: 0; right: 0;
+    width: 0; height: 0;
+    border-right: 100px solid rgba(44,24,16,0.05);
+    border-top: 70px solid transparent;
+    border-bottom: 70px solid transparent;
+  }
+  .wax-seal {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px; height: 44px;
+    background: radial-gradient(circle at 40% 40%, var(--rose-light), var(--rose));
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(196,115,106,0.5);
+    transition: opacity 0.5s;
+  }
+  .wax-seal span { font-size: 1.2rem; }
+  .envelope.open .wax-seal { opacity: 0; }
+
+  /* ─── MESSAGE CARD (RECEIVER) ─── */
+  .message-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease 0.6s;
+    width: 100%; max-width: 480px;
+  }
+  .message-reveal.shown {
+    opacity: 1; transform: translateY(0);
+  }
+  .message-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.9;
+    text-align: center;
+    padding: 0.5rem 0;
+  }
+  .message-author {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.1rem;
+    color: var(--rose);
+    text-align: right;
+    margin-top: 1rem;
+  }
+  .reply-hint {
+    font-family: 'IM Fell English', serif;
+    font-size: 0.82rem;
+    font-style: italic;
+    color: var(--aged);
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  /* ─── NAV ─── */
+  .nav-top {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 1rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 50;
+    background: linear-gradient(to bottom, rgba(245,237,216,0.9), transparent);
+  }
+  .nav-logo {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .nav-logo span { color: var(--rose); }
+
+  /* ─── STEP INDICATOR ─── */
+  .step-row {
+    display: flex; gap: 0.4rem; align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  .step-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--aged);
+    transition: all 0.3s;
+  }
+  .step-dot.active { background: var(--rose); transform: scale(1.3); }
+
+  /* ─── HOME CHOICE ─── */
+  .choice-row {
+    display: flex; gap: 1rem;
+    flex-wrap: wrap; justify-content: center;
+    margin-top: 1rem;
+  }
+
+  /* ─── SUCCESS ─── */
+  .success-icon {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ─── CHARACTER COUNT ─── */
+  .char-count {
+    font-family: 'IM Fell English', serif;
+    font-size: 0.78rem;
+    color: var(--aged);
+    text-align: right;
+    margin-top: 0.25rem;
+  }
+
+  /* ─── PEN DECORATION ─── */
+  .pen-deco {
+    position: absolute;
+    right: -18px; bottom: 30px;
+    opacity: 0.12;
+    transform: rotate(25deg);
+    pointer-events: none;
+  }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 520px) {
+    .paper-card { padding: 1.6rem 1.4rem; }
+    .deco-corner { width: 90px; height: 90px; }
+    .butterfly { display: none; }
+    .choice-row { flex-direction: column; }
+    .choice-row .wax-btn { width: 100%; }
+  }
+
+  /* ─── FADE PAGE ─── */
+  .page { animation: fadeUp 0.5s ease both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── SPECIAL FLOURISH ─── */
+  .flourish {
+    font-family: 'Dancing Script', cursive;
+    color: var(--gold);
+    font-size: 1.6rem;
+    text-align: center;
+    opacity: 0.6;
+    margin: 0.2rem 0;
+    letter-spacing: 0.1em;
+  }
+
+  /* ─── SEND AGAIN ROW ─── */
+  .link-actions { display: flex; gap: 0.6rem; margin-top: 1rem; flex-wrap: wrap; }
+  .link-actions .wax-btn { margin-top: 0; flex: 1; min-width: 130px; }
+
+  /* ─── PROFILE HEADER (RECEIVER) ─── */
+  .profile-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-style: italic;
+    color: var(--ink);
+  }
+  .profile-sub {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--aged);
+    margin-top: 0.2rem;
+  }
+
+  /* ─── INBOX ─── */
+  .inbox-list { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; }
+  .inbox-item {
+    background: rgba(245,237,216,0.7);
+    border: 1px solid var(--border-thin);
+    border-left: 3px solid var(--rose-light);
+    padding: 0.85rem 1rem;
+    border-radius: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .inbox-item:hover { background: rgba(245,237,216,1); border-left-color: var(--rose); }
+  .inbox-item .msg-preview {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.98rem;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .inbox-item .msg-time {
+    font-family: 'IM Fell English', serif;
+    font-size: 0.75rem;
+    color: var(--aged);
+    margin-top: 0.3rem;
+  }
+  .inbox-item .unread-dot {
+    position: absolute; top: 0.85rem; right: 0.85rem;
+    width: 8px; height: 8px;
+    background: var(--rose);
+    border-radius: 50%;
+  }
+
+  .nav-back {
+    font-family: 'IM Fell English', serif;
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    display: flex; align-items: center; gap: 0.3rem;
+  }
+  .nav-back:hover { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ─── CORNER DECORATIONS ─── -->
+<svg class="deco-corner tl" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M5 135 C5 80 5 30 5 5 C30 5 80 5 135 5" stroke="#2C1810" stroke-width="2" fill="none"/>
+  <path d="M5 120 C5 70 5 25 5 5 C25 5 70 5 120 5" stroke="#2C1810" stroke-width="0.8" fill="none"/>
+  <circle cx="20" cy="20" r="4" fill="#C4736A" opacity="0.7"/>
+  <!-- Rose -->
+  <g transform="translate(42,42) rotate(-30)">
+    <circle cx="0" cy="0" r="10" fill="#C4736A" opacity="0.5"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(72)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(144)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(216)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="5" fill="#C4736A" opacity="0.8"/>
+  </g>
+  <!-- Leaf -->
+  <path d="M70 30 Q85 15 100 30 Q85 45 70 30" fill="#8BA888" opacity="0.5"/>
+  <path d="M30 70 Q15 85 30 100 Q45 85 30 70" fill="#8BA888" opacity="0.5"/>
+  <!-- Tiny dots -->
+  <circle cx="60" cy="18" r="2" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="18" cy="60" r="2" fill="#C9A84C" opacity="0.5"/>
+  <circle cx="78" cy="22" r="1.5" fill="#7B9BAE" opacity="0.5"/>
+</svg>
+<svg class="deco-corner tr" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M5 135 C5 80 5 30 5 5 C30 5 80 5 135 5" stroke="#2C1810" stroke-width="2" fill="none"/>
+  <path d="M5 120 C5 70 5 25 5 5 C25 5 70 5 120 5" stroke="#2C1810" stroke-width="0.8" fill="none"/>
+  <g transform="translate(42,42) rotate(20)">
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(72)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(144)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(216)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="5" fill="#C4736A" opacity="0.8"/>
+  </g>
+  <path d="M70 30 Q55 15 40 30 Q55 45 70 30" fill="#8BA888" opacity="0.5"/>
+</svg>
+<svg class="deco-corner bl" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M5 135 C5 80 5 30 5 5 C30 5 80 5 135 5" stroke="#2C1810" stroke-width="2" fill="none"/>
+  <g transform="translate(55,55) rotate(-15)">
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(72)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(144)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(216)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="5" fill="#C4736A" opacity="0.8"/>
+  </g>
+</svg>
+<svg class="deco-corner br" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M5 135 C5 80 5 30 5 5 C30 5 80 5 135 5" stroke="#2C1810" stroke-width="2" fill="none"/>
+  <g transform="translate(55,55) rotate(10)">
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(72)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(144)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(216)"/>
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="#DBA89E" opacity="0.6" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="5" fill="#C4736A" opacity="0.8"/>
+  </g>
+</svg>
+
+<!-- ─── BUTTERFLY ─── -->
+<div class="butterfly" style="left:5%;top:20%">
+  <svg width="44" height="36" viewBox="0 0 44 36">
+    <ellipse cx="11" cy="12" rx="10" ry="12" fill="#DBA89E" opacity="0.75" transform="rotate(-20 11 12)"/>
+    <ellipse cx="9" cy="24" rx="7" ry="8" fill="#C4736A" opacity="0.65" transform="rotate(-10 9 24)"/>
+    <ellipse cx="33" cy="12" rx="10" ry="12" fill="#DBA89E" opacity="0.75" transform="rotate(20 33 12)"/>
+    <ellipse cx="35" cy="24" rx="7" ry="8" fill="#C4736A" opacity="0.65" transform="rotate(10 35 24)"/>
+    <line x1="22" y1="4" x2="22" y2="32" stroke="#2C1810" stroke-width="1.2" opacity="0.4"/>
+    <path d="M22 4 Q19 2 17 0 M22 4 Q25 2 27 0" stroke="#2C1810" stroke-width="0.8" fill="none" opacity="0.4"/>
+    <!-- wing patterns -->
+    <circle cx="13" cy="11" r="2.5" fill="#C9A84C" opacity="0.4"/>
+    <circle cx="31" cy="11" r="2.5" fill="#C9A84C" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ─── FLOATING BOTANICALS ─── -->
+<div class="botanical" style="left:8%;top:35%;--r:-15deg;animation-delay:0.2s">
+  <svg width="60" height="80" viewBox="0 0 60 80" opacity="0.18">
+    <path d="M30 75 C30 55 20 40 10 25 C20 30 30 35 30 45 C30 35 40 20 50 10 C42 28 32 50 30 75" fill="#8BA888"/>
+    <line x1="30" y1="75" x2="30" y2="20" stroke="#8BA888" stroke-width="1.2"/>
+  </svg>
+</div>
+<div class="botanical" style="right:6%;top:42%;--r:12deg;animation-delay:0.5s">
+  <svg width="70" height="90" viewBox="0 0 70 90" opacity="0.18">
+    <path d="M35 85 C35 65 22 45 8 28 C22 34 35 42 35 54 C35 42 48 22 62 8 C54 30 37 58 35 85" fill="#8BA888"/>
+    <line x1="35" y1="85" x2="35" y2="18" stroke="#8BA888" stroke-width="1.2"/>
+  </svg>
+</div>
+<div class="botanical" style="left:3%;bottom:20%;--r:5deg;animation-delay:0.8s">
+  <svg width="50" height="50" viewBox="0 0 50 50" opacity="0.2">
+    <!-- daisy -->
+    <g transform="translate(25,25)">
+      <ellipse cy="-14" rx="4" ry="10" fill="#E8CF8A" transform="rotate(0)"/>
+      <ellipse cy="-14" rx="4" ry="10" fill="#E8CF8A" transform="rotate(45)"/>
+      <ellipse cy="-14" rx="4" ry="10" fill="#E8CF8A" transform="rotate(90)"/>
+      <ellipse cy="-14" rx="4" ry="10" fill="#E8CF8A" transform="rotate(135)"/>
+      <ellipse cy="-14" rx="4" ry="10" fill="#E8CF8A" transform="rotate(180)"/>
+      <ellipse cy="-14" rx="4" ry="10" fill="#E8CF8A" transform="rotate(225)"/>
+      <ellipse cy="-14" rx="4" ry="10" fill="#E8CF8A" transform="rotate(270)"/>
+      <ellipse cy="-14" rx="4" ry="10" fill="#E8CF8A" transform="rotate(315)"/>
+      <circle r="7" fill="#C9A84C"/>
+    </g>
+  </svg>
+</div>
+<div class="botanical" style="right:4%;bottom:28%;--r:-8deg;animation-delay:1s">
+  <svg width="55" height="55" viewBox="0 0 55 55" opacity="0.2">
+    <g transform="translate(27,27)">
+      <ellipse cy="-12" rx="4" ry="9" fill="#DBA89E" transform="rotate(0)"/>
+      <ellipse cy="-12" rx="4" ry="9" fill="#DBA89E" transform="rotate(60)"/>
+      <ellipse cy="-12" rx="4" ry="9" fill="#DBA89E" transform="rotate(120)"/>
+      <ellipse cy="-12" rx="4" ry="9" fill="#DBA89E" transform="rotate(180)"/>
+      <ellipse cy="-12" rx="4" ry="9" fill="#DBA89E" transform="rotate(240)"/>
+      <ellipse cy="-12" rx="4" ry="9" fill="#DBA89E" transform="rotate(300)"/>
+      <circle r="6" fill="#C4736A"/>
+    </g>
+  </svg>
+</div>
+<!-- small feather -->
+<div class="botanical" style="left:15%;bottom:15%;--r:30deg;animation-delay:0.3s">
+  <svg width="30" height="70" viewBox="0 0 30 70" opacity="0.15">
+    <path d="M15 65 C15 45 5 30 2 10 C12 25 20 40 15 65" fill="#7B9BAE"/>
+    <path d="M15 65 C15 45 25 30 28 10 C18 25 10 40 15 65" fill="#7B9BAE"/>
+    <line x1="15" y1="65" x2="15" y2="8" stroke="#7B9BAE" stroke-width="1"/>
+  </svg>
+</div>
+<!-- inkdrop -->
+<div class="botanical" style="right:14%;top:18%;--r:0deg;animation-delay:0.7s">
+  <svg width="24" height="36" viewBox="0 0 24 36" opacity="0.2">
+    <path d="M12 0 Q20 14 20 22 A8 8 0 0 1 4 22 Q4 14 12 0" fill="#2C1810"/>
+  </svg>
+</div>
+
+<!-- ─── TOP NAV ─── -->
+<nav class="nav-top">
+  <div class="nav-logo" onclick="goHome()">Bisikku<span>.</span></div>
+  <div class="nav-back" id="nav-back-btn" style="display:none" onclick="goHome()">
+    ← Kembali
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     PAGE: HOME
+═══════════════════════════════════════ -->
+<div id="page-home" class="page">
+  <div class="logo">Bisikku<span>.</span></div>
+  <div class="tagline">— Not gonna lie, ada yang ingin kusampaikan —</div>
+
+  <div class="paper-card" style="text-align:center">
+    <div class="torn-top"></div>
+
+    <!-- quill illustration -->
+    <div style="text-align:center;margin-bottom:1rem;">
+      <svg width="80" height="60" viewBox="0 0 80 60" fill="none">
+        <!-- quill pen -->
+        <path d="M70 5 Q60 20 45 35 Q30 48 10 55" stroke="#2C1810" stroke-width="1.5" fill="none" opacity="0.6"/>
+        <path d="M70 5 Q65 8 60 12 Q55 20 45 35 Q55 15 70 5" fill="#E8CF8A" opacity="0.7"/>
+        <path d="M70 5 Q75 8 72 14 Q68 20 58 28 Q68 12 70 5" fill="#D4B896" opacity="0.6"/>
+        <!-- ink trail -->
+        <path d="M10 55 Q8 57 9 59" stroke="#2C1810" stroke-width="1.2" fill="none" opacity="0.4"/>
+        <!-- inkwell -->
+        <ellipse cx="10" cy="54" rx="8" ry="5" fill="#2C1810" opacity="0.2"/>
+        <ellipse cx="10" cy="52" rx="7" ry="4" fill="#2C1810" opacity="0.15"/>
+      </svg>
+    </div>
+
+    <p class="card-sub" style="font-size:1rem;margin-bottom:0.2rem;">Bisikkan rahasiamu</p>
+    <p style="font-family:'IM Fell English',serif;font-size:0.85rem;color:var(--aged);line-height:1.7;margin-bottom:1.2rem">
+      Sebuah ruang aman untuk menyampaikan apa yang ada di hatimu,<br>tanpa nama, tanpa takut.
+    </p>
+
+    <div class="divider"><div class="divider-icon">✦</div></div>
+
+    <p class="card-title" style="font-size:1.1rem;margin-bottom:0.9rem">Kamu adalah…</p>
+
+    <div class="choice-row">
+      <button class="wax-btn" style="flex:1;min-width:140px" onclick="showPage('sender')">
+        <span>🪶 Pengirim Pesan</span>
+      </button>
+      <button class="wax-btn secondary" style="flex:1;min-width:140px" onclick="showPage('receiver')">
+        <span>📜 Penerima Pesan</span>
+      </button>
+    </div>
+
+    <div class="flourish" style="margin-top:1.2rem">~ ✦ ~</div>
+    <p class="reply-hint">Setiap kata adalah rahasia yang menunggu untuk didengar</p>
+
+    <!-- pen decoration -->
+    <div class="pen-deco">
+      <svg width="20" height="90" viewBox="0 0 20 90">
+        <rect x="7" y="10" width="6" height="65" rx="3" fill="#2C1810"/>
+        <path d="M7 75 L10 88 L13 75" fill="#2C1810"/>
+        <rect x="6" y="8" width="8" height="6" rx="1" fill="#C9A84C"/>
+        <rect x="4" y="4" width="12" height="6" rx="2" fill="#D4B896"/>
+        <rect x="3" y="0" width="14" height="6" rx="3" fill="#DBA89E"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PAGE: SENDER
+═══════════════════════════════════════ -->
+<div id="page-sender" class="page">
+  <!-- STEP 1: Enter username -->
+  <div id="sender-step1" style="width:100%;display:flex;flex-direction:column;align-items:center">
+    <div class="paper-card">
+      <div class="torn-top"></div>
+      <div class="step-row">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+
+      <div style="text-align:center;margin-bottom:1.2rem">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <!-- paper scroll -->
+          <rect x="8" y="6" width="40" height="44" rx="2" fill="var(--parchment)" stroke="var(--aged)" stroke-width="1.5"/>
+          <path d="M8 10 Q4 14 4 20 Q4 36 8 40" fill="var(--aged)" opacity="0.5"/>
+          <path d="M48 10 Q52 14 52 20 Q52 36 48 40" fill="var(--aged)" opacity="0.5"/>
+          <line x1="16" y1="18" x2="40" y2="18" stroke="var(--aged)" stroke-width="1"/>
+          <line x1="16" y1="24" x2="40" y2="24" stroke="var(--aged)" stroke-width="1"/>
+          <line x1="16" y1="30" x2="34" y2="30" stroke="var(--aged)" stroke-width="1"/>
+          <!-- wax seal -->
+          <circle cx="28" cy="42" r="8" fill="var(--rose)" opacity="0.8"/>
+          <circle cx="28" cy="42" r="5" fill="var(--rose-light)" opacity="0.6"/>
+        </svg>
+      </div>
+
+      <p class="card-title">Kepada siapa?</p>
+      <p class="card-sub">Masukkan nama pengguna penerima</p>
+
+      <div class="divider"><div class="divider-icon">❧</div></div>
+
+      <label class="field-label">Nama Pengguna</label>
+      <input type="text" id="recipient-name" class="pen-input" placeholder="cth: rosalia_dewi"
+        oninput="updateRecipient(this.value)"/>
+      <p id="link-preview" style="font-family:'IM Fell English',serif;font-size:0.8rem;color:var(--aged);margin-top:0.5rem;font-style:italic;min-height:1.2rem"></p>
+
+      <button class="wax-btn" onclick="senderStep2()"><span>Lanjutkan →</span></button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Write message -->
+  <div id="sender-step2" style="width:100%;display:none;flex-direction:column;align-items:center">
+    <div class="paper-card">
+      <div class="torn-top"></div>
+      <div class="step-row">
+        <div class="step-dot"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+
+      <div style="text-align:center;margin-bottom:0.8rem">
+        <!-- inkwell icon -->
+        <svg width="48" height="48" viewBox="0 0 48 48">
+          <ellipse cx="24" cy="36" rx="14" ry="10" fill="var(--ink)" opacity="0.15"/>
+          <rect x="10" y="22" width="28" height="16" rx="6" fill="var(--ink)" opacity="0.2"/>
+          <rect x="12" y="20" width="24" height="6" rx="2" fill="var(--ink)" opacity="0.15"/>
+          <!-- quill dipping -->
+          <path d="M32 5 Q26 18 20 26 Q28 10 32 5" fill="var(--gold-light)" opacity="0.8"/>
+          <path d="M32 5 Q38 10 34 18 Q28 24 22 28 Q30 14 32 5" fill="var(--gold)" opacity="0.6"/>
+          <line x1="22" y1="28" x2="24" y2="32" stroke="var(--ink)" stroke-width="1" opacity="0.5"/>
+        </svg>
+      </div>
+
+      <p class="card-title">Tulis pesanmu</p>
+      <p class="card-sub">Kepada: <em id="recipient-display" style="color:var(--rose)"></em></p>
+
+      <div class="divider"><div class="divider-icon">✦</div></div>
+
+      <label class="field-label">Pesanmu (anonim)</label>
+      <textarea id="message-text" class="pen-textarea" placeholder="Jujur saja… tidak ada yang tahu ini darimu." maxlength="280"
+        oninput="updateCharCount()"></textarea>
+      <div class="char-count"><span id="char-count">0</span>/280</div>
+
+      <!-- mood selection -->
+      <div style="margin-top:1rem">
+        <label class="field-label">Suasana Hati</label>
+        <div id="mood-row" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.4rem">
+          <div class="mood-btn selected" data-mood="💌 Rindu" onclick="selectMood(this)">💌 Rindu</div>
+          <div class="mood-btn" data-mood="🌹 Kagum" onclick="selectMood(this)">🌹 Kagum</div>
+          <div class="mood-btn" data-mood="🕊️ Damai" onclick="selectMood(this)">🕊️ Damai</div>
+          <div class="mood-btn" data-mood="🌙 Galau" onclick="selectMood(this)">🌙 Galau</div>
+          <div class="mood-btn" data-mood="🌻 Senang" onclick="selectMood(this)">🌻 Senang</div>
+        </div>
+      </div>
+
+      <button class="wax-btn" onclick="sendMessage()" style="margin-top:1.4rem"><span>Kirim Bisikan ✉</span></button>
+      <button class="wax-btn secondary" onclick="senderStep1()"><span>← Kembali</span></button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Success -->
+  <div id="sender-step3" style="width:100%;display:none;flex-direction:column;align-items:center">
+    <div class="paper-card" style="text-align:center">
+      <div class="torn-top"></div>
+      <div class="step-row">
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot active"></div>
+      </div>
+
+      <div class="success-icon">📮</div>
+      <p class="card-title">Bisikanmu terkirim!</p>
+      <p class="card-sub">Rahasia itu kini terbang seperti kupu-kupu…</p>
+
+      <div class="divider"><div class="divider-icon">✦</div></div>
+
+      <p style="font-family:'IM Fell English',serif;font-style:italic;font-size:0.9rem;color:var(--ink-light);line-height:1.8;margin-bottom:1rem">
+        Pesan telah dikirimkan ke <em id="sent-to" style="color:var(--rose)"></em>.<br>
+        Mereka akan menerimanya tanpa tahu siapa kamu.
+      </p>
+
+      <div class="flourish">~ ✉ ~</div>
+
+      <!-- Bagikan link -->
+      <div style="margin-top:1rem;text-align:left">
+        <label class="field-label">Dapatkan bisikan untukmu juga!</label>
+        <div class="link-box" onclick="copyMyLink()" id="my-link-box">
+          <span class="link-icon">🔗</span>
+          <span id="my-link-text"></span>
+        </div>
+        <p style="font-family:'IM Fell English',serif;font-size:0.78rem;color:var(--aged);margin-top:0.4rem;font-style:italic">
+          ✦ Klik untuk menyalin tautanmu
+        </p>
+      </div>
+
+      <div class="link-actions">
+        <button class="wax-btn" onclick="senderStep1()"><span>Kirim lagi</span></button>
+        <button class="wax-btn secondary" onclick="goHome()"><span>Beranda</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PAGE: RECEIVER
+═══════════════════════════════════════ -->
+<div id="page-receiver" class="page">
+  <!-- TAB: INBOX -->
+  <div id="receiver-inbox" style="width:100%;display:flex;flex-direction:column;align-items:center">
+    <div class="paper-card" style="max-width:520px">
+      <div class="torn-top"></div>
+
+      <!-- Profile header -->
+      <div class="profile-header">
+        <div style="width:70px;height:70px;border-radius:50%;background:var(--rose-light);margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;border:3px solid var(--rose);box-shadow:0 4px 14px rgba(196,115,106,0.3)">
+          <svg width="36" height="36" viewBox="0 0 36 36">
+            <circle cx="18" cy="14" r="7" fill="var(--cream)" opacity="0.8"/>
+            <path d="M4 34 Q4 24 18 24 Q32 24 32 34" fill="var(--cream)" opacity="0.8"/>
+          </svg>
+        </div>
+        <p class="profile-name" id="profile-name-display">Namamu</p>
+        <p class="profile-sub" id="profile-link-display">bisikku.app/u/namamu</p>
+      </div>
+
+      <!-- Link share box -->
+      <div style="background:rgba(196,115,106,0.08);border:1.5px dashed var(--rose-light);border-radius:2px;padding:0.9rem;margin-bottom:1.2rem">
+        <p style="font-family:'IM Fell English',serif;font-size:0.82rem;font-style:italic;color:var(--ink-light);margin-bottom:0.5rem">Bagikan tautanmu agar orang bisa mengirimkan bisikan kepadamu:</p>
+        <div class="link-box" onclick="copyReceiverLink()" id="receiver-link-box" style="background:rgba(245,237,216,0.8)">
+          <span class="link-icon">🔗</span>
+          <span id="receiver-link-text"></span>
+        </div>
+      </div>
+
+      <div class="divider"><div class="divider-icon">📬</div></div>
+
+      <!-- Enter username to view inbox -->
+      <div id="receiver-login" style="margin-bottom:1rem">
+        <label class="field-label">Masuk sebagai</label>
+        <input type="text" id="receiver-username" class="pen-input" placeholder="Nama penggunamu…" oninput="updateReceiverProfile(this.value)"/>
+        <button class="wax-btn" onclick="loadInbox()" style="margin-top:0.8rem"><span>Lihat Bisikanku 📜</span></button>
+      </div>
+
+      <!-- Inbox list -->
+      <div id="inbox-container" style="display:none">
+        <p style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;margin-bottom:0.3rem">Bisikan untukmu</p>
+        <p class="reply-hint" style="text-align:left;margin-bottom:0.8rem">Klik untuk membaca</p>
+        <div class="inbox-list" id="inbox-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: READ MESSAGE -->
+  <div id="receiver-read" style="width:100%;display:none;flex-direction:column;align-items:center">
+    <div class="envelope-wrap">
+      <div class="envelope" id="envelope" onclick="openEnvelope()">
+        <div class="envelope-body">
+          <div class="envelope-flap"></div>
+          <div class="envelope-bottom"></div>
+          <div class="envelope-left"></div>
+          <div class="envelope-right"></div>
+          <div class="wax-seal"><span>🌹</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="reply-hint" id="envelope-hint">Ketuk amplop untuk membuka</p>
+
+    <div class="message-reveal" id="message-reveal">
+      <div class="paper-card">
+        <div class="torn-top"></div>
+        <p class="reply-hint" style="margin-bottom:0.8rem">Seseorang berkata padamu…</p>
+        <div class="divider"><div class="divider-icon">✦</div></div>
+        <p class="message-text" id="full-message-text"></p>
+        <div class="message-author" id="full-message-mood"></div>
+        <div class="divider" style="margin:1rem 0"><div class="divider-icon">❧</div></div>
+        <p class="reply-hint">Ingin tahu siapa yang menulis ini?<br>Tidak mungkin — itu adalah seninya. ✦</p>
+        <button class="wax-btn secondary" onclick="backToInbox()" style="margin-top:1rem"><span>← Kembali ke Kotak Bisikan</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<style>
+  .mood-btn {
+    padding: 0.35rem 0.7rem;
+    border: 1.5px solid var(--border-thin);
+    border-radius: 20px;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    white-space: nowrap;
+  }
+  .mood-btn:hover { border-color: var(--rose); color: var(--rose); }
+  .mood-btn.selected { background: var(--rose); border-color: var(--rose); color: var(--cream); }
+</style>
+
+<script>
+  // ─── STATE ───
+  let selectedMood = '💌 Rindu';
+  let recipientName = '';
+  let messages = JSON.parse(localStorage.getItem('bisikku_messages') || '[]');
+
+  // ─── PAGE NAVIGATION ───
+  function showPage(name) {
+    ['page-home','page-sender','page-receiver'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    document.getElementById('page-' + name).style.display = 'flex';
+    document.getElementById('nav-back-btn').style.display = name === 'home' ? 'none' : 'flex';
+
+    if (name === 'sender') {
+      showSenderStep(1);
+    }
+    if (name === 'receiver') {
+      document.getElementById('receiver-inbox').style.display = 'flex';
+      document.getElementById('receiver-read').style.display = 'none';
+      updateReceiverProfile('');
+    }
+  }
+
+  function goHome() {
+    showPage('home');
+    document.getElementById('nav-back-btn').style.display = 'none';
+    document.getElementById('page-home').style.display = 'flex';
+  }
+
+  // ─── SENDER STEPS ───
+  function showSenderStep(n) {
+    document.getElementById('sender-step1').style.display = n === 1 ? 'flex' : 'none';
+    document.getElementById('sender-step2').style.display = n === 2 ? 'flex' : 'none';
+    document.getElementById('sender-step3').style.display = n === 3 ? 'flex' : 'none';
+  }
+
+  function updateRecipient(val) {
+    recipientName = val.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+    const preview = document.getElementById('link-preview');
+    if (recipientName) {
+      preview.textContent = '→ bisikku.app/u/' + recipientName;
+      preview.style.color = 'var(--sepia)';
+    } else {
+      preview.textContent = '';
+    }
+  }
+
+  function senderStep2() {
+    const val = document.getElementById('recipient-name').value.trim();
+    if (!val) { showToast('Masukkan nama pengguna terlebih dahulu'); return; }
+    recipientName = val.toLowerCase().replace(/[^a-z0-9_]/g,'');
+    document.getElementById('recipient-display').textContent = recipientName;
+    showSenderStep(2);
+  }
+
+  function senderStep1() {
+    showSenderStep(1);
+  }
+
+  function updateCharCount() {
+    const txt = document.getElementById('message-text').value;
+    document.getElementById('char-count').textContent = txt.length;
+  }
+
+  function selectMood(el) {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedMood = el.dataset.mood;
+  }
+
+  function sendMessage() {
+    const txt = document.getElementById('message-text').value.trim();
+    if (!txt) { showToast('Tulis pesanmu terlebih dahulu'); return; }
+
+    const msg = {
+      id: Date.now(),
+      to: recipientName,
+      text: txt,
+      mood: selectedMood,
+      time: new Date().toLocaleString('id-ID', {hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}),
+      read: false
+    };
+    messages.push(msg);
+    localStorage.setItem('bisikku_messages', JSON.stringify(messages));
+
+    document.getElementById('sent-to').textContent = recipientName;
+    document.getElementById('my-link-text').textContent = 'bisikku.app/u/' + (recipientName || 'aku');
+    showSenderStep(3);
+  }
+
+  function copyMyLink() {
+    const link = 'bisikku.app/u/' + (recipientName || 'aku');
+    navigator.clipboard.writeText(link).catch(()=>{});
+    showToast('Tautan disalin! ✦');
+  }
+
+  // ─── RECEIVER ───
+  function updateReceiverProfile(val) {
+    const name = val.trim().toLowerCase().replace(/[^a-z0-9_]/g,'') || 'namamu';
+    document.getElementById('profile-name-display').textContent = val.trim() || 'Namamu';
+    document.getElementById('profile-link-display').textContent = 'bisikku.app/u/' + name;
+    document.getElementById('receiver-link-text').textContent = 'bisikku.app/u/' + name;
+  }
+
+  function copyReceiverLink() {
+    const link = document.getElementById('receiver-link-text').textContent;
+    navigator.clipboard.writeText(link).catch(()=>{});
+    showToast('Tautan disalin! ✦');
+  }
+
+  let currentMessages = [];
+
+  function loadInbox() {
+    const uname = document.getElementById('receiver-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+    if (!uname) { showToast('Masukkan nama penggunamu'); return; }
+
+    updateReceiverProfile(uname);
+
+    // Filter messages + add demo messages
+    currentMessages = messages.filter(m => m.to === uname);
+
+    // Demo messages if inbox empty
+    if (currentMessages.length === 0) {
+      currentMessages = [
+        { id: 1, text: 'Kau selalu tahu cara membuat hari terasa lebih ringan. Terima kasih hanya ada.', mood: '🌹 Kagum', time: '2 jam lalu', read: false },
+        { id: 2, text: 'Not gonna lie… aku sudah lama ingin mengatakannya, tapi sulit. Kamu berarti banyak.', mood: '💌 Rindu', time: 'Kemarin', read: true },
+        { id: 3, text: 'Senyummu adalah alasan aku semangat di pagi hari. Tetaplah seperti ini.', mood: '🌻 Senang', time: '3 hari lalu', read: false },
+      ];
+    }
+
+    document.getElementById('receiver-login').style.display = 'none';
+    document.getElementById('inbox-container').style.display = 'block';
+
+    const list = document.getElementById('inbox-list');
+    list.innerHTML = '';
+    currentMessages.forEach((msg, idx) => {
+      const item = document.createElement('div');
+      item.className = 'inbox-item';
+      item.innerHTML = `
+        ${!msg.read ? '<div class="unread-dot"></div>' : ''}
+        <p class="msg-preview">"${msg.text.substring(0,80)}${msg.text.length > 80 ? '…' : ''}"</p>
+        <p class="msg-time">${msg.mood} · ${msg.time}</p>
+      `;
+      item.onclick = () => openMessage(idx);
+      list.appendChild(item);
+    });
+  }
+
+  function openMessage(idx) {
+    const msg = currentMessages[idx];
+    document.getElementById('full-message-text').textContent = '"' + msg.text + '"';
+    document.getElementById('full-message-mood').textContent = msg.mood;
+
+    // Reset envelope
+    const env = document.getElementById('envelope');
+    env.classList.remove('open');
+    document.getElementById('message-reveal').classList.remove('shown');
+    document.getElementById('envelope-hint').style.display = 'block';
+
+    document.getElementById('receiver-inbox').style.display = 'none';
+    document.getElementById('receiver-read').style.display = 'flex';
+  }
+
+  function openEnvelope() {
+    const env = document.getElementById('envelope');
+    if (env.classList.contains('open')) return;
+    env.classList.add('open');
+    document.getElementById('envelope-hint').textContent = '✦ Pesan terbuka ✦';
+
+    setTimeout(() => {
+      document.getElementById('message-reveal').classList.add('shown');
+    }, 700);
+  }
+
+  function backToInbox() {
+    document.getElementById('receiver-inbox').style.display = 'flex';
+    document.getElementById('receiver-read').style.display = 'none';
+  }
+
+  // ─── TOAST ───
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
